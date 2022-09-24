@@ -1,7 +1,12 @@
 import copy
+
 PossibleDirs = ['L', 'R', 'D', 'U']
 FoundPaths = 0
 
+
+## Movement is applied to the head, the rest of elements move one step ahead 
+
+# Moves Snake left (fil, col-1)
 def moveLeft(snake):
     for i in range(len(snake)-1, 0, -1):
         snake[i][0] = snake[i-1][0]
@@ -9,6 +14,7 @@ def moveLeft(snake):
     snake[0][1] -= 1
     return snake
 
+# Moves Snake right (fil, col+1)
 def moveRight(snake):
     for i in range(len(snake)-1, 0, -1):
         snake[i][0] = snake[i-1][0]
@@ -16,6 +22,7 @@ def moveRight(snake):
     snake[0][1] += 1
     return snake
 
+# Moves Snake down (fil+1, col)
 def moveDown(snake):
     for i in range(len(snake)-1, 0, -1):
         snake[i][0] = snake[i-1][0]
@@ -23,6 +30,7 @@ def moveDown(snake):
     snake[0][0] += 1
     return snake
 
+# Moves Snake up (fil-1, col)
 def moveUp(snake):
     for i in range(len(snake)-1, 0, -1):
         snake[i][0] = snake[i-1][0]
@@ -30,39 +38,35 @@ def moveUp(snake):
     snake[0][0] -= 1
     return snake
 
-def applyMovement(move, snake, board):
+# Checks if a movement in 'move' direction is allowed (No crossing borders nor colliding with itself)
+def MovementAllowed(move, snake, board):
     if move == 'L':
         if snake[0][1] - 1 >= 0 and [snake[0][0], snake[0][1] - 1] not in snake[:len(snake)-1]:
-            # moveLeft(snake)
             return True
         else: 
             return False
 
     elif move == 'R':
         if snake[0][1] + 1 < board[1] and [snake[0][0], snake[0][1] + 1] not in snake[:len(snake)-1]:
-            # moveRight(snake)
             return True
         else:
             return False
 
     elif move == 'D':
         if snake [0][0] + 1 < board[0] and [snake[0][0] + 1, snake[0][1]] not in snake[:len(snake)-1]:
-            # moveDown(snake)
             return True
         else:
             return False
 
     elif move == 'U':
         if snake[0][0] -1 >= 0 and [snake[0][0] - 1, snake[0][1]] not in snake[:len(snake)-1]:
-            # moveUp(snake)
             return True
         else:
             return False
-
-    showBoard(board, snake)
     return True
 
-def snakeMoved(dir, snake):
+# Applies the movement in direction 'dir'
+def ApplyMovement(dir, snake):
     snake2Move = copy.deepcopy(snake)
     if dir == 'L':
         return moveLeft(snake2Move)
@@ -73,22 +77,22 @@ def snakeMoved(dir, snake):
     elif dir == 'U':
         return moveUp(snake2Move)
            
-
+# Backtracking function. At each position, tries to go to every direction until the path reaches size depth, then returns
 def PossiblePaths(board, snake, depth, currentSize):
-    showBoard(board, snake)
     if currentSize == depth:
         global FoundPaths
         FoundPaths += 1
         return 
     
     for dir in PossibleDirs:
-        if applyMovement(dir, snake, board): 
-            PossiblePaths(board, snakeMoved(dir,snake), depth, currentSize + 1)
+        if MovementAllowed(dir, snake, board): 
+            PossiblePaths(board, ApplyMovement(dir,snake), depth, currentSize + 1)
 
     return FoundPaths
 
+# Shows the current state of the board with the snake on it. Helps visualizing the movements. 
 def showBoard(board, snake):
-    print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxx")
+    print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     for i in range(board[0]):
         for j in range(board[1]):
             if [i,j] in snake:
@@ -99,9 +103,9 @@ def showBoard(board, snake):
 
 def main():
     print("---Snake Problem---")
-    snake_org = [[5,5], [5,4], [4,4], [4,5]]
-    board = [10, 10]
-    depth = 4
+    snake_org = [[2,1], [1,1], [0,1], [0,0]]
+    board = [3,3]
+    depth = 2
     showBoard(board, snake_org)
     TEST1 = PossiblePaths(board, snake_org, depth, 0)
     print("TEST 1 ANSWER: ", TEST1)
