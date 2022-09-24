@@ -2,7 +2,7 @@ import copy
 
 PossibleDirs = ['L', 'R', 'D', 'U']
 FoundPaths = 0
-
+CurrentSize = 0
 
 ## Movement is applied to the head, the rest of elements move one step ahead 
 
@@ -78,19 +78,24 @@ def ApplyMovement(dir, snake):
         return moveUp(snake2Move)
            
 # Backtracking function. At each position, tries to go to every direction until the path reaches size depth, then returns
-def PossiblePaths(board, snake, depth, currentSize):
-    if currentSize == depth:
+def PossiblePaths(board, snake, depth):
+    global CurrentSize
+    if CurrentSize == depth:
+        CurrentSize -= 1
         global FoundPaths
         FoundPaths += 1
         return 
     
     for dir in PossibleDirs:
-        if MovementAllowed(dir, snake, board): 
-            PossiblePaths(board, ApplyMovement(dir,snake), depth, currentSize + 1)
+        if MovementAllowed(dir, snake, board):
+            CurrentSize += 1 
+            PossiblePaths(board, ApplyMovement(dir,snake), depth)
 
+    CurrentSize -= 1
     return FoundPaths
 
 # Shows the current state of the board with the snake on it. Helps visualizing the movements. 
+# Not needed when eve
 def showBoard(board, snake):
     print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     for i in range(board[0]):
@@ -103,11 +108,43 @@ def showBoard(board, snake):
 
 def main():
     print("---Snake Problem---")
-    snake_org = [[2,1], [1,1], [0,1], [0,0]]
-    board = [3,3]
-    depth = 2
-    showBoard(board, snake_org)
-    TEST1 = PossiblePaths(board, snake_org, depth, 0)
+    global FoundPaths
+    global CurrentSize
+    #---------------
+    board_1 =  [4, 3]
+    snake_org_1 = [[2,2], [3,2], [3,1], [3,0], [2,0], [1,0], [0,0]]
+    depth_1 = 3
+    #---------------
+    board_2 =  [2, 3]
+    snake_org_2 = [[0,2], [0,1], [0,0], [1,0], [1,1], [1,2]]
+    depth_2 = 10
+    #---------------
+    board_3 =  [10, 10]
+    snake_org_3 =  [[5,5], [5,4], [4,4], [4,5]]
+    depth_3 =  4
+    #---------------
+
+    TEST1 = PossiblePaths(board_1, snake_org_1, depth_1)
+    FoundPaths = 0
+    CurrentSize = 0
+    TEST2 = PossiblePaths(board_2, snake_org_2, depth_2)
+    FoundPaths = 0
+    CurrentSize = 0
+    TEST3 = PossiblePaths(board_3, snake_org_3, depth_3)
+    FoundPaths = 0
+    CurrentSize = 0
+
+    print("TEST 1:")
+    showBoard(board_1, snake_org_1)
     print("TEST 1 ANSWER: ", TEST1)
+
+    print("\n\nTEST 2: ")
+    showBoard(board_2, snake_org_2)
+    print("TEST 2 ANSWER: ", TEST2)
+
+    print("\n\nTEST 3: ")
+    showBoard(board_3, snake_org_3)
+    print("TEST 3 ANSWER: ", TEST3)
+
 if __name__ == '__main__':
     main()
